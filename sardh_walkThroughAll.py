@@ -1,5 +1,6 @@
 
 from t0_separate_loop_blocks_from_refs import separate_loop_blocks_from_refs
+from t1_create_smaller_loop_bounds import create_smaller_loop_bounds
 # from Task1_expend_loop_form_annotated_trace import expend_loop_form_annotated_trace
 # from Task2_3_create_set_n_vector_n_rf import create_set_n_vector_n_rf
 # from Task4_unresolved_refs_solve import unresolved_refs_solve
@@ -12,7 +13,11 @@ unresolved_refs = []
 final_rf = {}
 for item in separated_loop_blocks:
     if item[0].startswith('['):
-        print(item)
+        # print(item)
+
+        smaller_problems = create_smaller_loop_bounds(item)
+        for x in smaller_problems:
+            print(x)
         
         # expanded_trace = expend_loop_form_annotated_trace(item)
         # exp_trace_set, exp_trace_vector, exp_trace_in_order_merge_up, exp_rd = create_set_n_vector_n_rf(expanded_trace)
