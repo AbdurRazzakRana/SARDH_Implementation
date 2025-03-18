@@ -29,5 +29,5 @@ def create_smaller_loop_bounds(loop_refs):
             index+=1
         # print(small_prob)
         list_of_smaller_problems.append(small_prob)
-    print(list_of_smaller_problems)
+    # print(list_of_smaller_problems)
     return list_of_smaller_problems, loop_bounds
