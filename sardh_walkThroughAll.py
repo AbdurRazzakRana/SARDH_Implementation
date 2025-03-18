@@ -12,6 +12,7 @@ vec_refs = ['retval', 'i', '[100', 'i', 'j', '[200', 'j', 'i', 'i', 'j', 'arr-i-
 final_rf = {}
 final_rf.setdefault(-1, 0)
 separated_loop_blocks = separate_loop_blocks_from_refs(vec_refs)
+print(separated_loop_blocks)
 for item in separated_loop_blocks:
     if item[0].startswith('['):
         # print(item)
@@ -31,6 +32,10 @@ for item in separated_loop_blocks:
                     rf[key] = value 
             unresolved_refs.append([exp_trace_in_order_merge_up, exp_trace_vector])
             rf_unres, cold_miss = unresolved_refs_solve(unresolved_refs)
+            print()
+            print(rf_unres)
+            print(cold_miss)
+            print()
             for key, value in rf_unres.items():
                 if key in rf:
                     rf[key] += value
@@ -71,4 +76,5 @@ for item in separated_loop_blocks:
             else:
                 final_rf[key] = value
 
+print("Final RP:")
 print(final_rf)
