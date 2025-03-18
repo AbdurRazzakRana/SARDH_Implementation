@@ -13,7 +13,9 @@ for item in separated_loop_blocks:
     if item[0].startswith('['):
         # print(item)
         rps_small_probs = []
-        smaller_problems = create_smaller_loop_bounds(item)
+        smaller_problems, loop_bounds = create_smaller_loop_bounds(item)
+        key_dict = {}
+        # print(smaller_problems)
         for small_prob in smaller_problems:
             unresolved_refs = []
             final_rf = {}
@@ -34,8 +36,26 @@ for item in separated_loop_blocks:
 
             final_rf[-1] = len(cold_miss)
             sorted_items = sorted(final_rf.items())
-            # sorted_dict_str = "{" + ", ".join(f"{k}: {v}" for k, v in sorted_items) + "}"
-            rps_small_probs.append(sorted_items)
+            sorted_dict_str = "{" + ", ".join(f"{k}: {v}" for k, v in sorted_items) + "}"
+            rps_small_probs.append(sorted_dict_str)
+            # print(sorted_dict_str)
+
+
+        
+            values_dict = eval(sorted_dict_str.strip())
+            
+            # Loop through each key-value pair in the dictionary
+            for key, value in values_dict.items():
+                # Add the value to the corresponding list for each key
+                if key not in key_dict:
+                    key_dict[key] = []
+                key_dict[key].append(value)
+
+        print(key_dict)
+        if len(loop_bounds) == 2:
+            print("2 nested loop")
+        elif len(loop_bounds) == 3: 
+            print("3 nested loop")
         break
     # else:
         # unresolved_refs.append([item, []])
