@@ -1,9 +1,10 @@
-
 from t0_separate_loop_blocks_from_refs import separate_loop_blocks_from_refs
 from t1_create_smaller_loop_bounds import create_smaller_loop_bounds
 from t2_expand_loop_from_annotated_trace import expend_loop_form_annotated_trace
 from t3_create_setn_vector_n_rf import create_set_n_vector_n_rf
 from t4_unresolved_refs_solve import unresolved_refs_solve
+from t5_equation_n_predict_actual_bound import predict_2_nested
+
 import time
 start_time = time.time()
 
@@ -52,7 +53,10 @@ for item in separated_loop_blocks:
                 key_dict[key].append(value)
 
         print(key_dict)
+        print(loop_bounds)
         if len(loop_bounds) == 2:
+            pred_rf = predict_2_nested(key_dict=key_dict, i_tot=loop_bounds[0][0]-2, j_tot=loop_bounds[1][0]-2)
+            print(pred_rf)
             print("2 nested loop")
         elif len(loop_bounds) == 3: 
             print("3 nested loop")
