@@ -2,7 +2,8 @@ from itertools import product
 import copy
 
 smaller_examples_3_nested = [[2, 2, 2], [2, 2, 3], [2, 3, 2], [2, 3, 3],[3, 2, 2],[3, 2, 3], [3, 3, 2], [3, 3, 3]]
-smaller_examples_2_nested = [[2,2], [2,3], [3,2], [3,3]]
+# smaller_examples_2_nested = [[2,2], [2,3], [3,2], [3,3]]
+smaller_examples_2_nested = [[2,2], [2,3], [3,2], [3,3], [2,4], [3,4],[4,2],[4,4]]
 def generate_combinations(n, start=2, end=4):
     return list(product(range(start, end+1), repeat=n))
 
@@ -30,4 +31,4 @@ def create_smaller_loop_bounds(loop_refs):
         # print(small_prob)
         list_of_smaller_problems.append(small_prob)
     # print(list_of_smaller_problems)
-    return list_of_smaller_problems, loop_bounds
+    return list_of_smaller_problems, loop_bounds, list_of_small_bounds

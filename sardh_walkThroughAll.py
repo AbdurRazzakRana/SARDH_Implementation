@@ -10,6 +10,8 @@ start_time = time.time()
 
 vec_refs = ['retval', 'i', '[100', 'i', 'j', '[200', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[300', 'i', 'j', '[400', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
 final_rf = {}
+# part2: array reference resolve.
+array_refs_total = []
 final_rf.setdefault(-1, 0)
 separated_loop_blocks = separate_loop_blocks_from_refs(vec_refs)
 print(separated_loop_blocks)
@@ -17,8 +19,11 @@ for item in separated_loop_blocks:
     if item[0].startswith('['):
         # print(item)
         rps_small_probs = []
-        smaller_problems, loop_bounds = create_smaller_loop_bounds(item)
+        smaller_problems, loop_bounds, list_of_small_bounds = create_smaller_loop_bounds(item)
         key_dict = {}
+
+        # part2: array reference resolve.
+        array_rfs_one_loop = []
         # print(smaller_problems)
         for small_prob in smaller_problems:
             unresolved_refs = []
@@ -32,10 +37,11 @@ for item in separated_loop_blocks:
                     rf[key] = value 
             unresolved_refs.append([exp_trace_in_order_merge_up, exp_trace_vector])
             rf_unres, cold_miss = unresolved_refs_solve(unresolved_refs)
-            print()
-            print(rf_unres)
-            print(cold_miss)
-            print()
+            # print()
+            # print(rf_unres)
+            # print(cold_miss)
+            # print()
+            array_rfs_one_loop.append(cold_miss)
             for key, value in rf_unres.items():
                 if key in rf:
                     rf[key] += value
@@ -60,7 +66,8 @@ for item in separated_loop_blocks:
                 key_dict[key].append(value)
 
         # print(key_dict)
-        # print(loop_bounds)
+        print(array_rfs_one_loop)
+        # print(list_of_small_bounds)
         if len(loop_bounds) == 2:
             pred_rf = predict_2_nested(key_dict=key_dict, i_tot=loop_bounds[0][0]-2, j_tot=loop_bounds[1][0]-2)
             print(pred_rf)
