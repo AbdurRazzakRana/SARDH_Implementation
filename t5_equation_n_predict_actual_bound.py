@@ -45,7 +45,6 @@ def predict_3_nested(key_dict, i_tot, j_tot, k_tot):
             c_ik = ik - (bb + i_inc + k_inc)
             c_ijk = ijk - (bb + i_inc + j_inc + k_inc + c_ik + c_ij + c_jk)
             rd = bb + k_inc * k_tot + i_inc*i_tot + j_inc*j_tot + c_jk * j_tot * k_tot + c_ik* i_tot * k_tot + c_ij* i_tot*j_tot + c_ijk*i_tot*j_tot*k_tot
-            print(f"Key {key}: {rf}")
             # print(f"Key {key}: {rd}")
             predicted_list[key] = rd
     # print(predicted_list)
