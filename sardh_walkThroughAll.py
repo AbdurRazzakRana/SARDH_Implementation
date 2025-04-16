@@ -6,17 +6,23 @@ from t4_unresolved_refs_solve import unresolved_refs_solve
 from t5_equation_n_predict_actual_bound import predict_2_nested, predict_3_nested
 from t6_array_lookup_table import array_lookup_table
 from t7_calc_array_reference_rd import calc_array_reference_rd
+from t8_mark_items_with_range import mark_items_with_range_structure
 
 import time
 
 # 1 = completely static prediction
 # 2 = set an avg to the later arrays
 # 3 = generating the array sequence
-mood = 1
+mood = 2
 start_time = time.time()
 
 vec_refs = ['retval', 'i', '[100', 'i', 'j', '[200', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[300', 'i', 'j', '[400', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
 final_rf = {}
+knowledge_structure = {
+        "variables": set(),
+        "arrays": []
+    }
+isFirstLoop=True
 # part2: array reference resolve.
 array_refs_total = []
 final_rf.setdefault(-1, 0)
@@ -103,7 +109,15 @@ for item in separated_loop_blocks:
                     count_resolved_array_rfs += value
                 final_rf[-1] -= count_resolved_array_rfs  
                 print(f"did nothing with:{array_rf[-1]}")
-        # elif mood == 1:
+        elif mood == 2:
+            # print("Hello")
+            # print(item)
+            if isFirstLoop:
+                knowledge_structure = mark_items_with_range_structure(item)
+                isFirstLoop = False
+            else:
+                print("--------MERGING LEFT--------")
+                print(item)
 
 end_time = time.time()
 print("Final RP:")

@@ -50,9 +50,8 @@ def parse_and_generate_sequence(vec_refs):
 
 def expend_loop_form_annotated_trace(vec_refs):
     # vec_refs = ['[3', 'i', 'j', '[5', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i',']' ]
-    # print("Start")
-    # print(vec_refs)
-    # print("End")
+
+    # print(unique_sets)
     final_sequence = parse_and_generate_sequence(vec_refs)
-    # print(final_sequence)
+    
     return final_sequence
