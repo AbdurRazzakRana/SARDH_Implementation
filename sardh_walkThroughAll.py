@@ -113,11 +113,59 @@ for item in separated_loop_blocks:
             # print("Hello")
             # print(item)
             if isFirstLoop:
-                knowledge_structure = mark_items_with_range_structure(item)
+                knowledge_structure_prev = mark_items_with_range_structure(item)
                 isFirstLoop = False
+                print(knowledge_structure_prev)
             else:
+                knowledge_structure2 = mark_items_with_range_structure(item)
                 print("--------MERGING LEFT--------")
-                print(item)
+                for key, value in knowledge_structure2.items():
+                    if 'variables' in key:
+                        for i in range(0, len(value)):
+                            final_rf[i] +=1
+                            final_rf[-1] -=1
+                    if 'arrays' in key:
+                        # print(value)
+                        predicted_rd = 0
+                        if isinstance(value, list):
+                            for item2 in value:
+                                array_current = item2
+                                array_name_key, array_name_value = list(item2.items())[0]
+                                array_block_prev = next((item for item in knowledge_structure_prev['arrays'] if item['name'] == array_name_value), None)
+                                print("Found Block: ", array_block_prev)
+                                if array_block_prev is not None:
+                                    if len(array_current) == 5 and len(array_block_prev) == 5:
+                                        curr_end_ind_1 = int(array_current['start2'])
+                                        curr_end_ind_2 = int(array_current['end2'])
+                                        prev_end_ind_1 = int(array_block_prev['start2'])
+                                        prev_end_ind_2 = int(array_block_prev['end2'])
+                                        print(curr_end_ind_1, "-", curr_end_ind_2, "-", prev_end_ind_1, "-", prev_end_ind_2)
+                                        if curr_end_ind_1 > prev_end_ind_1 and curr_end_ind_2 > prev_end_ind_2:
+                                            curr_ref= (curr_end_ind_1+1) * (curr_end_ind_2 + 1)
+                                            prev_ref = (prev_end_ind_1+1) * (prev_end_ind_2 + 1)
+                                            print("Used Reference: ", prev_ref)
+                                            print("New Reference: ", curr_ref-prev_ref)
+                                            final_rf[-1] -=prev_ref
+                                            predicted_rd += prev_ref
+                                        # write the only i is bigger
+                                        # write the only j is bigger
+                                    elif len(array_current) == 3 and len(array_block_prev) == 3:
+                                        # print("1d array")
+                                        curr_end_ind = int(array_current['end'])
+                                        prev_end_ind = int(array_block_prev['end'])
+                                        print(curr_end_ind, "-", prev_end_ind)
+                                        if curr_end_ind > prev_end_ind:
+                                            prev_ref = prev_end_ind
+                                            print("Used Reference: ", prev_ref)
+                                            print("New Reference: ", curr_end_ind-prev_end_ind)
+                                            final_rf[-1] -=prev_ref
+                                            predicted_rd += prev_ref
+                                else:
+                                    print("completely new array: add to the knowledge")
+                        else:
+                            print(f"  {value}")
+                        print("array rd: ", predicted_rd)
+                print(knowledge_structure2)
 
 end_time = time.time()
 print("Final RP:")
