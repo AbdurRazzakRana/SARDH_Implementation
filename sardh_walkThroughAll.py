@@ -147,6 +147,8 @@ for item in separated_loop_blocks:
                                             print("New Reference: ", curr_ref-prev_ref)
                                             final_rf[-1] -=prev_ref
                                             predicted_rd += prev_ref
+                                            array_block_prev['start2'] = str(curr_end_ind_1)
+                                            array_block_prev['end2'] = str(curr_end_ind_2)
                                         # write the only i is bigger
                                         # write the only j is bigger
                                     elif len(array_current) == 3 and len(array_block_prev) == 3:
@@ -155,18 +157,26 @@ for item in separated_loop_blocks:
                                         prev_end_ind = int(array_block_prev['end'])
                                         print(curr_end_ind, "-", prev_end_ind)
                                         if curr_end_ind > prev_end_ind:
-                                            prev_ref = prev_end_ind
+                                            prev_ref = prev_end_ind + 1
                                             print("Used Reference: ", prev_ref)
                                             print("New Reference: ", curr_end_ind-prev_end_ind)
                                             final_rf[-1] -=prev_ref
                                             predicted_rd += prev_ref
+                                            array_block_prev['end'] = str(curr_end_ind)
                                 else:
                                     print("completely new array: add to the knowledge")
                         else:
                             print(f"  {value}")
                         print("array rd: ", predicted_rd)
-                print(knowledge_structure2)
 
+                        if predicted_rd in final_rf:
+                            final_rf[predicted_rd] += predicted_rd
+                        else:
+                            final_rf[predicted_rd] = predicted_rd
+                # print(knowledge_structure2)
+            
+            print("Observe the updates")
+            print(knowledge_structure_prev)
 end_time = time.time()
 print("Final RP:")
 print(final_rf)
