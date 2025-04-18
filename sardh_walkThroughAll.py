@@ -132,39 +132,72 @@ for item in separated_loop_blocks:
                                 array_current = item2
                                 array_name_key, array_name_value = list(item2.items())[0]
                                 array_block_prev = next((item for item in knowledge_structure_prev['arrays'] if item['name'] == array_name_value), None)
-                                print("Found Block: ", array_block_prev)
+                                # print("Found Block: ", array_block_prev)
                                 if array_block_prev is not None:
                                     if len(array_current) == 5 and len(array_block_prev) == 5:
                                         curr_end_ind_1 = int(array_current['start2'])
                                         curr_end_ind_2 = int(array_current['end2'])
                                         prev_end_ind_1 = int(array_block_prev['start2'])
                                         prev_end_ind_2 = int(array_block_prev['end2'])
-                                        print(curr_end_ind_1, "-", curr_end_ind_2, "-", prev_end_ind_1, "-", prev_end_ind_2)
+                                        # print(curr_end_ind_1, "-", curr_end_ind_2, "-", prev_end_ind_1, "-", prev_end_ind_2)
                                         if curr_end_ind_1 > prev_end_ind_1 and curr_end_ind_2 > prev_end_ind_2:
                                             curr_ref= (curr_end_ind_1+1) * (curr_end_ind_2 + 1)
                                             prev_ref = (prev_end_ind_1+1) * (prev_end_ind_2 + 1)
-                                            print("Used Reference: ", prev_ref)
-                                            print("New Reference: ", curr_ref-prev_ref)
+                                            # print("Used Reference: ", prev_ref)
+                                            # print("New Reference: ", curr_ref-prev_ref)
                                             final_rf[-1] -=prev_ref
                                             predicted_rd += prev_ref
                                             array_block_prev['start2'] = str(curr_end_ind_1)
                                             array_block_prev['end2'] = str(curr_end_ind_2)
                                         # write the only i is bigger
+                                        elif curr_end_ind_1 > prev_end_ind_1:
+                                            curr_ref= (curr_end_ind_1+1) * (curr_end_ind_2 + 1)
+                                            prev_ref = (prev_end_ind_1+1) * (curr_end_ind_2 + 1)
+                                            # print("Used Reference: ", prev_ref)
+                                            # print("New Reference: ", curr_ref-prev_ref)
+                                            final_rf[-1] -=prev_ref
+                                            predicted_rd += prev_ref
+                                            array_block_prev['start2'] = str(curr_end_ind_1)
                                         # write the only j is bigger
+                                        elif curr_end_ind_2 > prev_end_ind_2:
+                                            curr_ref= (curr_end_ind_1+1) * (curr_end_ind_2 + 1)
+                                            prev_ref = (curr_end_ind_1+1) * (prev_end_ind_2 + 1)
+                                            # print("Used Reference: ", prev_ref)
+                                            # print("New Reference: ", curr_ref-prev_ref)
+                                            final_rf[-1] -=prev_ref
+                                            predicted_rd += prev_ref
+                                            # array_block_prev['start2'] = str(curr_end_ind_1)
+                                            array_block_prev['end2'] = str(curr_end_ind_2)
+                                        # None of i and j is bigger
+                                        else:
+                                            curr_ref= (curr_end_ind_1+1) * (curr_end_ind_2 + 1)
+                                            prev_ref = (prev_end_ind_1+1) * (prev_end_ind_2 + 1)
+                                            # print("Used Reference: ", prev_ref)
+                                            # print("New Reference: ", curr_ref-prev_ref)
+                                            final_rf[-1] -=curr_ref
+                                            predicted_rd += curr_ref
+                                        
                                     elif len(array_current) == 3 and len(array_block_prev) == 3:
                                         # print("1d array")
                                         curr_end_ind = int(array_current['end'])
                                         prev_end_ind = int(array_block_prev['end'])
-                                        print(curr_end_ind, "-", prev_end_ind)
+                                        # print(curr_end_ind, "-", prev_end_ind)
                                         if curr_end_ind > prev_end_ind:
                                             prev_ref = prev_end_ind + 1
-                                            print("Used Reference: ", prev_ref)
-                                            print("New Reference: ", curr_end_ind-prev_end_ind)
+                                            # print("Used Reference: ", prev_ref)
+                                            # print("New Reference: ", curr_end_ind-prev_end_ind)
                                             final_rf[-1] -=prev_ref
                                             predicted_rd += prev_ref
                                             array_block_prev['end'] = str(curr_end_ind)
+                                        else:
+                                            prev_ref = curr_end_ind + 1
+                                            # print("Used Reference: ", prev_ref)
+                                            # print("New Reference: ", curr_end_ind-prev_end_ind)
+                                            final_rf[-1] -=prev_ref
+                                            predicted_rd += prev_ref
                                 else:
                                     print("completely new array: add to the knowledge")
+                                    knowledge_structure_prev['arrays'].append(item2)
                         else:
                             print(f"  {value}")
                         print("array rd: ", predicted_rd)
@@ -174,9 +207,8 @@ for item in separated_loop_blocks:
                         else:
                             final_rf[predicted_rd] = predicted_rd
                 # print(knowledge_structure2)
-            
-            print("Observe the updates")
-            print(knowledge_structure_prev)
+            # print("Observe the updates")
+            # print(knowledge_structure_prev)
 end_time = time.time()
 print("Final RP:")
 print(final_rf)
