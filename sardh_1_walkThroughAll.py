@@ -9,6 +9,7 @@ from t7_calc_array_reference_rd import calc_array_reference_rd
 from t8_mark_items_with_range import mark_items_with_range_structure
 
 import time
+import json
 
 # 1 = completely static prediction
 # 2 = set an avg to the later arrays
@@ -28,7 +29,7 @@ isFirstLoop=True
 array_refs_total = []
 final_rf.setdefault(-1, 0)
 separated_loop_blocks = separate_loop_blocks_from_refs(vec_refs)
-print(separated_loop_blocks)
+# print(separated_loop_blocks)
 for item in separated_loop_blocks:
     if item[0].startswith('['):
         # print(item)
@@ -109,7 +110,7 @@ for item in separated_loop_blocks:
                         final_rf[key] = value
                     count_resolved_array_rfs += value
                 final_rf[-1] -= count_resolved_array_rfs  
-                print(f"did nothing with:{array_rf[-1]}")
+                # print(f"did nothing with:{array_rf[-1]}")
         elif mood == 2:
             # print("Hello")
             # print(item)
@@ -119,7 +120,7 @@ for item in separated_loop_blocks:
                 print(knowledge_structure_prev)
             else:
                 knowledge_structure2 = mark_items_with_range_structure(item)
-                print("--------MERGING LEFT--------")
+                # print("--------MERGING LEFT--------")
                 for key, value in knowledge_structure2.items():
                     if 'variables' in key:
                         for i in range(0, len(value)):
@@ -197,11 +198,11 @@ for item in separated_loop_blocks:
                                             final_rf[-1] -=prev_ref
                                             predicted_rd += prev_ref
                                 else:
-                                    print("completely new array: add to the knowledge")
+                                    # print("completely new array: add to the knowledge")
                                     knowledge_structure_prev['arrays'].append(item2)
                         else:
                             print(f"  {value}")
-                        print("array rd: ", predicted_rd)
+                        # print("array rd: ", predicted_rd)
 
                         if predicted_rd in final_rf:
                             final_rf[predicted_rd] += predicted_rd
@@ -213,4 +214,8 @@ for item in separated_loop_blocks:
 end_time = time.time()
 print("Final RP:")
 print(final_rf)
-print(f"Time taken: {end_time-start_time}")
+print(f"This Model RF Prediction time taken: {end_time-start_time}")
+
+# Save as one-line dictionary format
+with open("sardh_1_out_1_static_rf.txt", "w") as file:
+    file.write(str(final_rf))

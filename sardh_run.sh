@@ -1,0 +1,3 @@
+python sardh_1_walkThroughAll.py
+python sardh_2_make_Parda_N_Predict_Same_Size_RF.py
+python sardh_3_run_rf_comp_graphs.py
