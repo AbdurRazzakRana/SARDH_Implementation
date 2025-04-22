@@ -16,7 +16,8 @@ import time
 mood = 2
 start_time = time.time()
 
-vec_refs = ['retval', 'i', '[100', 'i', 'j', '[200', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[300', 'i', 'j', '[400', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
+# vec_refs = ['retval', 'i', '[100', 'i', 'j', '[200', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[300', 'i', 'j', '[400', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
+vec_refs = ['retval', 'alpha', 'beta', 'i', '[100', 'i', 'j', '[150', 'j', 'i', 'j', 'tmp_array-i-j', 'k', '[200', 'k', 'alpha', 'i', 'k', 'A_array-i-k', 'k', 'j', 'B_array-k-j', 'i', 'j', 'tmp_array-i-j', 'tmp_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[150', 'i', 'j', '[200', 'j', 'beta', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', '[250', 'k', 'i', 'k', 'tmp_array-i-k', 'k', 'j', 'C_array-k-j', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
 final_rf = {}
 knowledge_structure = {
         "variables": set(),
