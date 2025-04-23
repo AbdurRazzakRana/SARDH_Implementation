@@ -1,6 +1,7 @@
 import ast
 from graph_genration import generate_rp_comparison_graph
 
+
 # Read the dictionaries from the text file
 with open("sardh_2_output_1_match_rf_size_dynamic_static.txt", "r") as file:
     lines = file.readlines()
