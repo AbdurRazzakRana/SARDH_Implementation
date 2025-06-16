@@ -19,7 +19,8 @@ if len(lines) >= 2:
 
     prepare_phit_compatible_data_from_RF(parda_reference_rf, "sardh_5_input_1_parda_phit_prepared.dat")
 
-    REUSE_DISTANCE_MISS_ALWAYS = 2 ** 30
+    # REUSE_DISTANCE_MISS_ALWAYS = 2 ** 30
+    REUSE_DISTANCE_MISS_ALWAYS = 20000
     unidentified_references_by_model = sum(parda_reference_rf.values()) - sum(this_model_rf.values())
     if unidentified_references_by_model > 0:
         this_model_rf[REUSE_DISTANCE_MISS_ALWAYS] = unidentified_references_by_model

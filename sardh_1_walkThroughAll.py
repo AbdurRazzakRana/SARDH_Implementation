@@ -7,6 +7,7 @@ from t5_equation_n_predict_actual_bound import predict_2_nested, predict_3_neste
 from t6_array_lookup_table import array_lookup_table
 from t7_calc_array_reference_rd import calc_array_reference_rd
 from t8_mark_items_with_range import mark_items_with_range_structure
+from t9_calc_array_reuse import calc_array_reuse
 
 import time
 import json
@@ -18,7 +19,10 @@ mood = 2
 start_time = time.time()
 
 # vec_refs = ['retval', 'i', '[100', 'i', 'j', '[200', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[300', 'i', 'j', '[400', 'j', 'i', 'i', 'j', 'arr-i-j', 'i', 'i', 'brr-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
-vec_refs = ['retval', 'alpha', 'beta', 'i', '[100', 'i', 'j', '[150', 'j', 'i', 'j', 'tmp_array-i-j', 'k', '[200', 'k', 'alpha', 'i', 'k', 'A_array-i-k', 'k', 'j', 'B_array-k-j', 'i', 'j', 'tmp_array-i-j', 'tmp_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[150', 'i', 'j', '[200', 'j', 'beta', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', '[250', 'k', 'i', 'k', 'tmp_array-i-k', 'k', 'j', 'C_array-k-j', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
+# vec_refs = ['retval', 'alpha', 'beta', 'i', '[3', 'i', 'j', '[4', 'j', 'i', 'j', 'tmp_array-i-j', 'k', '[5', 'k', 'alpha', 'i', 'k', 'A_array-i-k', 'k', 'j', 'B_array-j-k', 'i', 'j', 'tmp_array-i-j', 'tmp_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[3', 'i', 'j', '[4', 'j', 'beta', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', '[5', 'k', 'i', 'k', 'tmp_array-i-k', 'k', 'j', 'C_array-j-k', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
+# vec_refs = ['retval', 'argc.addr', 'argv.addr', 'ni', 'nj', 'nk', 'nl', 'i', '[16', 'i', 'j', '[18', 'j', 'i', 'j', 'tmp_array-i-j', 'k', '[22', 'k', 'alpha', 'i', 'k', 'A_array-i-j', 'k', 'j', 'B_array-k-j', 'i', 'j', 'tmp_array-i-j', 'tmp_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[16', 'i', 'j', '[24', 'j', 'beta', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', '[18', 'k', 'i', 'k', 'tmp_array-i-k', 'k', 'j', 'C_array-k-j', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
+# vec_refs = ['retval', 'argc.addr', 'argv.addr', 'ni', 'nj', 'nk', 'nl', 'i', '[40', 'i', 'j', '[50', 'j', 'i', 'j', 'tmp_array-i-j', 'k', '[70', 'k', 'alpha', 'i', 'k', 'A_array-i-j', 'k', 'j', 'B_array-k-j', 'i', 'j', 'tmp_array-i-j', 'tmp_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[40', 'i', 'j', '[80', 'j', 'beta', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', '[50', 'k', 'i', 'k', 'tmp_array-i-k', 'k', 'j', 'C_array-k-j', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
+vec_refs = ['retval', 'argc.addr', 'argv.addr', 'ni', 'nj', 'nk', 'nl', 'i', '[180', 'i', 'j', '[190', 'j', 'i', 'j', 'tmp_array-i-j', 'k', '[210', 'k', 'alpha', 'i', 'k', 'A_array-i-j', 'k', 'j', 'B_array-k-j', 'i', 'j', 'tmp_array-i-j', 'tmp_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[180', 'i', 'j', '[220', 'j', 'beta', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', '[190', 'k', 'i', 'k', 'tmp_array-i-k', 'k', 'j', 'C_array-k-j', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
 final_rf = {}
 knowledge_structure = {
         "variables": set(),
@@ -30,9 +34,12 @@ array_refs_total = []
 final_rf.setdefault(-1, 0)
 separated_loop_blocks = separate_loop_blocks_from_refs(vec_refs)
 # print(separated_loop_blocks)
+regular_refs_non_array = []
 for item in separated_loop_blocks:
+    print("Razzak")
+    print(item)
     if item[0].startswith('['):
-        # print(item)
+        print(final_rf)
         rps_small_probs = []
         smaller_problems, loop_bounds, list_of_small_bounds = create_smaller_loop_bounds(item)
         key_dict = {}
@@ -117,22 +124,32 @@ for item in separated_loop_blocks:
             if isFirstLoop:
                 knowledge_structure_prev = mark_items_with_range_structure(item)
                 isFirstLoop = False
-                print(knowledge_structure_prev)
+                # print(knowledge_structure_prev)
             else:
                 knowledge_structure2 = mark_items_with_range_structure(item)
                 # print("--------MERGING LEFT--------")
+                processed_array = []
                 for key, value in knowledge_structure2.items():
                     if 'variables' in key:
-                        for i in range(0, len(value)):
-                            final_rf[i] +=1
+                        for constInd, constVal in enumerate(value):
+                            final_rf[constInd] +=1
                             final_rf[-1] -=1
                     if 'arrays' in key:
-                        # print(value)
+                        const_variables = len(knowledge_structure2["variables"])
                         predicted_rd = 0
                         if isinstance(value, list):
                             for item2 in value:
+                                # This loop run through the Knowledge strcuture
+                                # Item2 picks a an array structure each time
                                 array_current = item2
                                 array_name_key, array_name_value = list(item2.items())[0]
+                                if array_name_value in processed_array:
+                                    continue
+                                else:
+                                    processed_array.append(array_name_value)
+                                # print("Final Array before processing array: ")
+                                # print(final_rf)
+                                # print(item2)
                                 array_block_prev = next((item for item in knowledge_structure_prev['arrays'] if item['name'] == array_name_value), None)
                                 # print("Found Block: ", array_block_prev)
                                 if array_block_prev is not None:
@@ -202,16 +219,37 @@ for item in separated_loop_blocks:
                                     knowledge_structure_prev['arrays'].append(item2)
                         else:
                             print(f"  {value}")
-                        # print("array rd: ", predicted_rd)
-
-                        if predicted_rd in final_rf:
-                            final_rf[predicted_rd] += predicted_rd
-                        else:
-                            final_rf[predicted_rd] = predicted_rd
+                        # print("array rd: ", const_variables)
+                        # if predicted_rd in final_rf:
+                        #     final_rf[predicted_rd + const_variables] += predicted_rd
+                        # else:
+                        #     final_rf[predicted_rd + const_variables] = predicted_rd
                 # print(knowledge_structure2)
             # print("Observe the updates")
             # print(knowledge_structure_prev)
+    else:
+        for singleRef in item:
+            if singleRef not in regular_refs_non_array:
+                final_rf[-1] += 1
+                regular_refs_non_array.append(singleRef)
+
 end_time = time.time()
+
+# print(regular_refs_non_array)
+for item in knowledge_structure2["variables"]:
+    if item in regular_refs_non_array:
+        final_rf[-1] -= 1
+
+
+#work for array reuse:
+
+# vec_refs = ['retval', 'alpha', 'beta', 'i', '[3', 'i', 'j', '[4', 'j', 'i', 'j', 'tmp_array-i-j', 'k', '[5', 'k', 'alpha', 'i', 'k', 'A_array-i-k', 'k', 'j', 'B_array-k-j', 'i', 'j', 'tmp_array-i-j', 'tmp_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'i', '[3', 'i', 'j', '[4', 'j', 'beta', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', '[5', 'k', 'i', 'k', 'tmp_array-i-k', 'k', 'j', 'C_array-k-j', 'i', 'j', 'D_array-i-j', 'D_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
+
+array_rf = calc_array_reuse(separated_loop_blocks)
+
+print("After reuse calculation")
+print(array_rf)
+
 print("Final RP:")
 print(final_rf)
 print(f"This Model RF Prediction time taken: {end_time-start_time}")

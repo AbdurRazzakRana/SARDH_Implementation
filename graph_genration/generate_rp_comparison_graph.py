@@ -34,7 +34,7 @@ def draw_RF_comparison_bar_graph(reference, predicted, freqencyNAbove):
 
     plt.xlabel('Reuse Distances')
     plt.ylabel('Frequency')
-    plt.title('Reuse Profile Estimation and PARDA comparison')
+    # plt.title('Reuse Profile Estimation and PARDA comparison')
     plt.xticks(x, keys)
     plt.legend()
     plt.tight_layout()

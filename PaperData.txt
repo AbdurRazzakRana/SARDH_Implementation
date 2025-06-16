@@ -1,0 +1,50 @@
+MINI----------
+#define NI 16
+#define NJ 18
+#define NK 22
+#define NL 24
+
+Cache hit Rate
+Parda: 98.98
+ASA: 97.72
+83.34
+
+Time:
+PArda: 1.480s
+ASA: 0.0108642578125 + 0.381
+
+SMALL-------
+
+#   define NI 40
+#   define NJ 50
+#   define NK 70
+#   define NL 80
+
+
+Cache hit Rate
+Parda: 99.59
+ASA: 98.27
+88.48
+
+Time:
+PArda: 17.585s
+ASA: 0.011269092559814453 + 0.381
+
+
+Medium-------
+
+#   define NI 180
+#   define NJ 190
+#   define NK 210
+#   define NL 220
+
+
+Cache hit Rate
+Parda: 92.53
+ASA: 91.44
+88.74
+
+Time:
+PArda: 844.119690 seconds
+ASA: 0.010710954666137695 + 0.381
+

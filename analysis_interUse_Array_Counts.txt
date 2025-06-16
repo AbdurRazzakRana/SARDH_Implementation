@@ -1,0 +1,11 @@
+15 : 
+K [repeating each time] 
+* (J-1) [first J is introducing references into the stack, next J's will find reuseses]
+
+15: 5*(4-1) = 15
+
+
+34: 
+(i-1) * combinations of j and k: like all the accesses of that array B
+(i-2) * J * K
+= 2 * 4 * 5 = 40

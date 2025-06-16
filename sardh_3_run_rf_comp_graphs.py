@@ -11,7 +11,7 @@ if len(lines) >= 2:
     parda_reference_rf = ast.literal_eval(lines[0].strip())
     this_model_rf = ast.literal_eval(lines[1].strip())
 
-    generate_rp_comparison_graph.draw_RF_comparison_bar_graph(parda_reference_rf, this_model_rf, 100)
+    # generate_rp_comparison_graph.draw_RF_comparison_bar_graph(parda_reference_rf, this_model_rf, 100)
     generate_rp_comparison_graph.draw_RF_comparison_bar_graph(parda_reference_rf, this_model_rf, 500)
 else:
     print("Error: File does not contain at least two lines.")
