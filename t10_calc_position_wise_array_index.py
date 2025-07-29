@@ -13,6 +13,7 @@ class LoopNode:
         self.array_used_below = []
         self.array_used_loop_var = []
         self.children = []     # for DFS printing
+        self.unique_const_under_this_loop = []
         self.parent = parent
         self.left = None
         self.right = None
@@ -90,6 +91,7 @@ for index, token in enumerate(trace):
         # attach as a child of current parent loop
         if current_parent:
             current_parent.children.append(normal_node)
+            normal_node.parent = current_parent
         else:
             root_nodes.append(normal_node)
         
@@ -108,6 +110,12 @@ for index, token in enumerate(trace):
                     if not already_listed:
                         tempNode.array_used_loop_var.append(parts)
                 tempNode = tempNode.parent
+        elif len(normal_node.parts) == 1:
+            # consts
+            base_name = parts[0]
+            already_listed = any(existing[0] == base_name for existing in normal_node.parent.unique_const_under_this_loop)
+            if not already_listed:
+                normal_node.parent.unique_const_under_this_loop.append(parts)
         prevNode = normal_node
 
 # DFS traversal
@@ -139,19 +147,56 @@ def get_arrays_impose_reuses(loop_node: LoopNode):
     
     return not_used
 
-def calculate_loopnode_metrics(loop_node: LoopNode, prefix):
-    """
-    Perform calculations for a single LoopNode.
-    You can expand this logic with any metrics you want.
-    """
-
-    print(f"\n=== Calculating for LoopNode {loop_node.number} ===")
+def print_loopnode(loop_node, parts):
+    print(f"\n=== Calculating for Array Reference: {parts}===")
+    print(f"LoopNode {loop_node.number}")
     print(f"Level: {loop_node.level}")
     print(f"Loop Var: {loop_node.var}")
     print(f"Parent Loop: {loop_node.parent.number if loop_node.parent else None}")
     print(f"Array Used Below: {loop_node.array_used_below}")
     print(f"Array Used Loop Var: {loop_node.array_used_loop_var}")
+    print(f"Unique const variables: {loop_node.unique_const_under_this_loop}")
 
+def traverse_and_print_arrays(node, array_dict, occurance_time, parts):
+    if node is None:
+        return
+    
+    # If it's a NormalNode
+    if isinstance(node, NormalNode):
+        return
+    
+    # If it's a LoopNode → go inside its child
+    elif isinstance(node, LoopNode):
+        for array in node.array_used_loop_var:
+            for key in array_dict:
+                if key == array[0]:
+                    array_dict[key] *= node.number
+            
+            if array[0] == parts[0]:
+                occurance_time[0] *= node.number
+                
+
+        for child in node.children:
+            traverse_and_print_arrays(child, array_dict, occurance_time, parts)
+
+
+def calc_reuse_distance_positional_array(loop_node, parts):
+    # print_loopnode(loop_node, parts)
+    # Create key-value dict where key = parts[0], value = 1
+    array_dict = {parts[0]: 1 for parts in loop_node.array_used_below}
+    occurance_time = [loop_node.number - 1]
+    
+    for child in loop_node.children:
+        traverse_and_print_arrays(child, array_dict, occurance_time, parts)
+    tempNode = loop_node.parent
+    while tempNode != None:
+        occurance_time[0] *= tempNode.number
+        tempNode = tempNode.parent
+    
+    return sum(array_dict.values()) + len(loop_node.unique_const_under_this_loop) -1, occurance_time[0]
+
+def calculate_loopnode_metrics(loop_node: LoopNode, prefix):
+    # print_loopnode(loop_node)
     # Example calculation: find arrays in below but not using loop var
     reuse_introducing_array_refs = [
         parts for parts in loop_node.array_used_below
@@ -159,21 +204,15 @@ def calculate_loopnode_metrics(loop_node: LoopNode, prefix):
     ]
 
     is_last_level = not any(isinstance(child, LoopNode) for child in loop_node.children)
-
     # print(f"Arrays NOT dependent on loop var: {not_reused}")
     for parts in reuse_introducing_array_refs:
         if loop_node.var not in parts and is_last_level:   # <-- main condition
             print(f"  → Already Covered in earlier process Skipped: {parts} (does NOT depend on loop var '{loop_node.var}') and used as a const")
         else:
-            print(f"Start Calculating for: {parts}")
-
-    # You can return results for further processing
-    # return {
-    #     "loop_number": loop_node.number,
-    #     "level": loop_node.level,
-    #     "not_reused_arrays": not_reused,
-    #     "child_count": len(loop_node.children)
-    # }
+            rd_array, occurance = calc_reuse_distance_positional_array(loop_node, parts)
+            print("RD CALCULATED: ", rd_array)
+            print("Occurance CALCULATED: ", occurance)
+            # break # remove later
 
 
 def dfs_bottom_up(node, indent=0):
@@ -181,12 +220,16 @@ def dfs_bottom_up(node, indent=0):
     for child in node.children:
         if isinstance(child, LoopNode):
             dfs_bottom_up(child, indent + 2)
-    # # then print this loop
-    # if isinstance(node, LoopNode):
-    #     print(f"Loop {node.number} (level {node.level})")
     # Then print THIS LoopNode information
     if isinstance(node, LoopNode):
         prefix = "  " * indent
+        print_loopnode(node, prefix)
+        if node.parent:
+            for const in node.unique_const_under_this_loop:
+                base_name = const[0]
+                already_listed = any(existing[0] == base_name for existing in node.parent.unique_const_under_this_loop)
+                if not already_listed:
+                    node.parent.unique_const_under_this_loop.append(const)
         # print(f"{prefix}=== LoopNode Info ===")
         # print(f"{prefix}Number: {node.number}")
         # print(f"{prefix}Level: {node.level}")
@@ -198,7 +241,7 @@ def dfs_bottom_up(node, indent=0):
         # # print(f"{prefix}Array Reuse Calc: {get_arrays_impose_reuses(node)}")
         # print(f"{prefix}Children Count: {len(node.children)}")
 
-        print(f"{prefix}-------------------------")
+        # print(f"{prefix}-------------------------")
 
         calculate_loopnode_metrics(node, prefix)
 
