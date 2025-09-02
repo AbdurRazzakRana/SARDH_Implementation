@@ -27,6 +27,7 @@ def predict_3_nested(key_dict, i_tot, j_tot, k_tot):
     len0=  len(key_dict[0])
     predicted_list = {}
     predicted_list.setdefault(-1, [])
+    # print(key_dict)
     for key, values in key_dict.items():
         if len(values) == len0:
             bb = values[0]
@@ -47,7 +48,6 @@ def predict_3_nested(key_dict, i_tot, j_tot, k_tot):
             rd = bb + k_inc * k_tot + i_inc*i_tot + j_inc*j_tot + c_jk * j_tot * k_tot + c_ik* i_tot * k_tot + c_ij* i_tot*j_tot + c_ijk*i_tot*j_tot*k_tot
             # print(f"Key {key}: {rd}")
             predicted_list[key] = rd
-    # print(predicted_list)
     return predicted_list
 
 

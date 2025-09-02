@@ -20,9 +20,16 @@ def parse_and_generate_sequence(vec_refs):
             for loopInd in range(0, loop_count):
                 temp_seq_one_loop = copy.deepcopy(temp_sequence)
                 for index, item in enumerate(temp_seq_one_loop):
-                    if 'rr' in item:  # Check if 'rr' exists in the string
-                        parts = item.split('-')
+                    # if 'rr' in item:  # Check if 'rr' exists in the string
+                    #     parts = item.split('-')
 
+                    #     for idx, value in enumerate(parts):  # Check if `var` exists in any of the parts
+                    #         # Replace `var` with `str(x)` only in the first occurrence of `var` in `parts`
+                    #         if parts[idx] == loop_var:
+                    #             parts[idx] = str(loopInd)
+                    #     temp_seq_one_loop[index] = '-'.join(parts)  # Join back the modified parts
+                    parts = item.split('-')
+                    if len(parts) > 1:  # Check if 'rr' exists in the string
                         for idx, value in enumerate(parts):  # Check if `var` exists in any of the parts
                             # Replace `var` with `str(x)` only in the first occurrence of `var` in `parts`
                             if parts[idx] == loop_var:

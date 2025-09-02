@@ -12,7 +12,7 @@ with open("sardh_5_output_phit_model.txt", "r") as f:
 
 labels = ["PARDA", "MODEL"]
 values = [parda_hit_rate, model_hit_rate]
-colors = ['blue', 'orange']
+colors = ['blue', 'red']
 
 plt.figure(figsize=(6, 5))
 bars = plt.bar(labels, values, color=colors)

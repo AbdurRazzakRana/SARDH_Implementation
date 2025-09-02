@@ -17,6 +17,8 @@ def calc_rd(item, ref_vector):
 
 
 def create_set_n_vector_n_rf(final_sequence):
+    # print("Here--------")
+    # print(expanded_trace)
     ref_set = set()
     ref_vector = []
     ref_vector_for_in_order = []

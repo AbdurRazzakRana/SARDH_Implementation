@@ -12,6 +12,7 @@ class LoopNode:
         self.var = var
         self.array_used_below = []
         self.array_used_loop_var = []
+        self.loop_used_below_with_bounds = {}
         self.children = []     # for DFS printing
         self.unique_const_under_this_loop = []
         self.parent = parent
@@ -37,100 +38,23 @@ class NormalNode:
         return f"NormalNode({self.parts}, level={self.level}, parent={parent_num})"
 
 
-trace = ['[3', 'i', 'j',
-         '[4', 'j', 'i', 'j', "'T-i-j'", 'k',
-             '[5', 'k', "'alpha'", 'i', 'k', "'A-i-k'", 'k', 'j', "'B-j-k'", 'i', 'j', "'T-i-j'", "'T-i-j'", 'k', 'k', ']',
-         'k', 'j', 'j', ']',
-        'j', 'i', 'i', ']']
+# trace = ['[3', 'i', 'j',
+#          '[4', 'j', 'i', 'j', "'T-j'", 'k',
+#              '[5', 'k', "'alpha'", 'i', 'k', "'A-i-k'", 'k', 'j', "'B-j-k'", 'i', 'j', "'T-i-j'", "'T-i-j'", 'k', 'k', ']',
+#          'k', 'j', 'j', ']',
+#         'j', 'i', 'i', ']']
 
-
-level = 0
-prevNode = None
-parent_stack = []
-root_nodes = []   # to track top-level nodes
-
-for index, token in enumerate(trace):
-    if token.startswith('[') and token[1:].isdigit():
-        number = int(token[1:])
-        current_parent = parent_stack[-1] if parent_stack else None
-        parts = trace[index+1].replace("'", "").split("-")
-        loop = LoopNode(number, level, var=parts[0], parent=current_parent)
-
-        # connect sequentially
-        if prevNode:
-            prevNode.right = loop
-            loop.left = prevNode
-
-        # if has a parent, add as a child
-        if parent_stack:
-            parent_stack[-1].children.append(loop)
-        else:
-            root_nodes.append(loop)
-
-        prevNode = loop
-        level += 1
-        parent_stack.append(loop)
-
-    elif token == ']':
-        # end of this loop scope
-        prevNode = parent_stack.pop()
-        level -= 1
-
-    else:
-        # Normal node
-        parts = token.replace("'", "").split("-")
-        print(parts)
-        current_parent = parent_stack[-1] if parent_stack else None
-        normal_node = NormalNode(parts, level, parent=current_parent)
-
-        # connect sequentially
-        if prevNode:
-            prevNode.right = normal_node
-            normal_node.left = prevNode
-
-        # attach as a child of current parent loop
-        if current_parent:
-            current_parent.children.append(normal_node)
-            normal_node.parent = current_parent
-        else:
-            root_nodes.append(normal_node)
-        
-        # treverse top and enlist to all loop node if it is array node
-        if len(normal_node.parts) > 1:
-            tempNode = normal_node.parent
-            while tempNode is not None:
-                # tempNode.array_used_below.append(parts)
-                base_name = parts[0]
-                already_listed = any(existing[0] == base_name for existing in tempNode.array_used_below)
-                if not already_listed:
-                    tempNode.array_used_below.append(parts)
-
-                if any(p == tempNode.var for p in parts):
-                    already_listed = any(existing[0] == base_name for existing in tempNode.array_used_loop_var)
-                    if not already_listed:
-                        tempNode.array_used_loop_var.append(parts)
-                tempNode = tempNode.parent
-        elif len(normal_node.parts) == 1:
-            # consts
-            base_name = parts[0]
-            already_listed = any(existing[0] == base_name for existing in normal_node.parent.unique_const_under_this_loop)
-            if not already_listed:
-                normal_node.parent.unique_const_under_this_loop.append(parts)
-        prevNode = normal_node
 
 # DFS traversal
 def dfs_print(node, indent=0):
     prefix = "  " * indent
     if isinstance(node, LoopNode):
-        print(f"{prefix}Loop {node.number} (level {node.level}) (Array used below {node.array_used_below}) (Array used loop var {node.array_used_loop_var})")
+        # print(f"{prefix}Loop {node.number} (level {node.level}) (Array used below {node.array_used_below}) (Array used loop var {node.array_used_loop_var})")
+        print_loopnode(node)
         for child in node.children:
             dfs_print(child, indent + 1)
-    else:
-        print(f"{prefix}Normal {node.parts} (level {node.level})")
-
-print("\n=== DFS Tree Structure ===")
-for root in root_nodes:
-    dfs_print(root)
+    # else:
+    #     print(f"{prefix}Normal {node.parts} (level {node.level})")
 
 
 def get_arrays_impose_reuses(loop_node: LoopNode):
@@ -147,8 +71,8 @@ def get_arrays_impose_reuses(loop_node: LoopNode):
     
     return not_used
 
-def print_loopnode(loop_node, parts):
-    print(f"\n=== Calculating for Array Reference: {parts}===")
+def print_loopnode(loop_node):
+    print(f"\n=== Calculating for Array Reference:===")
     print(f"LoopNode {loop_node.number}")
     print(f"Level: {loop_node.level}")
     print(f"Loop Var: {loop_node.var}")
@@ -156,6 +80,7 @@ def print_loopnode(loop_node, parts):
     print(f"Array Used Below: {loop_node.array_used_below}")
     print(f"Array Used Loop Var: {loop_node.array_used_loop_var}")
     print(f"Unique const variables: {loop_node.unique_const_under_this_loop}")
+    print(f"Loop Bounds Used Below: {loop_node.loop_used_below_with_bounds}")
 
 def traverse_and_print_arrays(node, array_dict, occurance_time, parts):
     if node is None:
@@ -195,7 +120,7 @@ def calc_reuse_distance_positional_array(loop_node, parts):
     
     return sum(array_dict.values()) + len(loop_node.unique_const_under_this_loop) -1, occurance_time[0]
 
-def calculate_loopnode_metrics(loop_node: LoopNode, prefix):
+def calculate_loopnode_metrics(loop_node: LoopNode, reuse_from_same_loop_block):
     # print_loopnode(loop_node)
     # Example calculation: find arrays in below but not using loop var
     reuse_introducing_array_refs = [
@@ -210,42 +135,131 @@ def calculate_loopnode_metrics(loop_node: LoopNode, prefix):
             print(f"  → Already Covered in earlier process Skipped: {parts} (does NOT depend on loop var '{loop_node.var}') and used as a const")
         else:
             rd_array, occurance = calc_reuse_distance_positional_array(loop_node, parts)
-            print("RD CALCULATED: ", rd_array)
-            print("Occurance CALCULATED: ", occurance)
+            # print("RD CALCULATED: ", rd_array)
+            # print("Occurance CALCULATED: ", occurance)
+            if rd_array in reuse_from_same_loop_block:
+                reuse_from_same_loop_block[rd_array] += occurance
+            else:
+                reuse_from_same_loop_block[rd_array] = occurance
             # break # remove later
 
 
-def dfs_bottom_up(node, indent=0):
+def add_to_loop_bound_list(var, number, loop_node):
+    if var in loop_node.loop_used_below_with_bounds:
+        loop_node.loop_used_below_with_bounds[var] = max(loop_node.loop_used_below_with_bounds[var], number)
+    else:
+        loop_node.loop_used_below_with_bounds[var] = number
+
+
+def dfs_bottom_up(node, reuse_from_same_loop_block, indent=0):
     # visit children first
     for child in node.children:
         if isinstance(child, LoopNode):
-            dfs_bottom_up(child, indent + 2)
+            dfs_bottom_up(child, reuse_from_same_loop_block, indent + 2)
     # Then print THIS LoopNode information
     if isinstance(node, LoopNode):
         prefix = "  " * indent
-        print_loopnode(node, prefix)
+        # print_loopnode(node)
         if node.parent:
             for const in node.unique_const_under_this_loop:
                 base_name = const[0]
                 already_listed = any(existing[0] == base_name for existing in node.parent.unique_const_under_this_loop)
                 if not already_listed:
                     node.parent.unique_const_under_this_loop.append(const)
-        # print(f"{prefix}=== LoopNode Info ===")
-        # print(f"{prefix}Number: {node.number}")
-        # print(f"{prefix}Level: {node.level}")
-        # print(f"{prefix}Var: {node.var}")
-        # parent_num = node.parent.number if node.parent else None
-        # print(f"{prefix}Parent: {parent_num}")
-        # print(f"{prefix}Array Used Below: {node.array_used_below}")
-        # print(f"{prefix}Array Used Loop Var: {node.array_used_loop_var}")
-        # # print(f"{prefix}Array Reuse Calc: {get_arrays_impose_reuses(node)}")
-        # print(f"{prefix}Children Count: {len(node.children)}")
+            # add the own loop bound first to the own list
+            add_to_loop_bound_list(node.var, node.number, node)
+            # add all of the current value to the parent loop
+            for key, value in node.loop_used_below_with_bounds.items():
+                add_to_loop_bound_list(key, value, node.parent)
+        else:
+            # add the own loop to the own list since no parent exist
+            add_to_loop_bound_list(node.var, node.number, node)
+        calculate_loopnode_metrics(node, reuse_from_same_loop_block)
 
-        # print(f"{prefix}-------------------------")
+def calc_position_wise_tree_based(trace, reuse_from_same_loop_block):
+    level = 0
+    prevNode = None
+    parent_stack = []
+    root_nodes = []   # to track top-level nodes
 
-        calculate_loopnode_metrics(node, prefix)
+    for index, token in enumerate(trace):
+        if token.startswith('[') and token[1:].isdigit():
+            number = int(token[1:])
+            current_parent = parent_stack[-1] if parent_stack else None
+            parts = trace[index+1].replace("'", "").split("-")
+            loop = LoopNode(number, level, var=parts[0], parent=current_parent)
 
-print("\n=== Bottom-Up DFS Loop Traversal ===")
-for root in root_nodes:
-    if isinstance(root, LoopNode):
-        dfs_bottom_up(root)
+            # connect sequentially
+            if prevNode:
+                prevNode.right = loop
+                loop.left = prevNode
+
+            # if has a parent, add as a child
+            if parent_stack:
+                parent_stack[-1].children.append(loop)
+            else:
+                root_nodes.append(loop)
+
+            prevNode = loop
+            level += 1
+            parent_stack.append(loop)
+
+        elif token == ']':
+            # end of this loop scope
+            prevNode = parent_stack.pop()
+            level -= 1
+
+        else:
+            # Normal node
+            parts = token.replace("'", "").split("-")
+            # print(parts)
+            current_parent = parent_stack[-1] if parent_stack else None
+            normal_node = NormalNode(parts, level, parent=current_parent)
+
+            # connect sequentially
+            if prevNode:
+                prevNode.right = normal_node
+                normal_node.left = prevNode
+
+            # attach as a child of current parent loop
+            if current_parent:
+                current_parent.children.append(normal_node)
+                normal_node.parent = current_parent
+            else:
+                root_nodes.append(normal_node)
+            
+            # treverse top and enlist to all loop node if it is array node
+            if len(normal_node.parts) > 1:
+                tempNode = normal_node.parent
+                while tempNode is not None:
+                    # tempNode.array_used_below.append(parts)
+                    base_name = parts[0]
+                    already_listed = any(existing[0] == base_name for existing in tempNode.array_used_below)
+                    if not already_listed:
+                        tempNode.array_used_below.append(parts)
+
+                    if any(p == tempNode.var for p in parts):
+                        already_listed = any(existing[0] == base_name for existing in tempNode.array_used_loop_var)
+                        if not already_listed:
+                            tempNode.array_used_loop_var.append(parts)
+                    tempNode = tempNode.parent
+            elif len(normal_node.parts) == 1:
+                # consts
+                base_name = parts[0]
+                already_listed = any(existing[0] == base_name for existing in normal_node.parent.unique_const_under_this_loop)
+                if not already_listed:
+                    normal_node.parent.unique_const_under_this_loop.append(parts)
+            prevNode = normal_node
+
+    print("\n=== DFS Tree Structure ===")
+    dfs_print(root_nodes[0])
+
+    print("\n=== Bottom-Up DFS Loop Traversal ===")
+    dfs_bottom_up(root_nodes[0], reuse_from_same_loop_block)
+    # print("Hola KOMO ESTAS")
+    # print(root_nodes[0].array_used_below_with_bounds)
+
+
+    dfs_print(root_nodes[0])
+
+    return root_nodes[0]

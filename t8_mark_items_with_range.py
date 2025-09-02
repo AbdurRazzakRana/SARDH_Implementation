@@ -26,6 +26,10 @@ def mark_items_with_range_structure(vec_refs):
                     # 2d array
                     name = parts[0]
                     start2 = int(findBound(loop_bound_map, parts[1]))-1
+                    print(item)
+                    print(loop_bound_map)
+                    print(parts)
+                    print(findBound(loop_bound_map, parts[2]))
                     end2 = int(findBound(loop_bound_map, parts[2]))-1
                     array_2d = {"name": name, "start1": 0, "end1": 0, "start2": start2, "end2": end2}
                     structure["arrays"].append(array_2d)
