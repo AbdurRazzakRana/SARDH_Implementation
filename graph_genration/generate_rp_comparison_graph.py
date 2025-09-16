@@ -101,27 +101,65 @@ predicted = {-1: 77504, 0: 31665749, 1: 18015349, 2: 13575151, 3: 7530150, 4: 31
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
-def draw_RF_comparison_bar_graph(reference, predicted, freqencyNAbove):
-    # Extract keys from reference that pass the threshold
-    keys = [k for k in reference if reference[k] > freqencyNAbove]
+# def draw_RF_comparison_bar_graph(reference, predicted, freqencyNAbove):
+#     # Extract keys from reference that pass the threshold
+#     keys = [k for k in reference if reference[k] > freqencyNAbove]
 
-    # Get corresponding values
-    ref_values = [reference.get(k, 0) for k in keys]
+#     # Get corresponding values
+#     ref_values = [reference.get(k, 0) for k in keys]
+#     pred_values = [predicted.get(k, 0) for k in keys]
+
+#     # Plotting
+#     x = range(len(keys))
+#     bar_width = 0.4
+
+#     plt.bar([i - bar_width/2 for i in x], ref_values, width=bar_width, label='PARDA Calculated')
+#     plt.bar([i + bar_width/2 for i in x], pred_values, width=bar_width, label='Our Prediction')
+
+#     plt.xlabel('Reuse Distances', fontsize=14, fontweight='bold')
+#     plt.ylabel('Frequency', fontsize=14, fontweight='bold')
+#     plt.xticks(x, keys, rotation=45, ha='right', fontsize=12, fontweight='bold')
+#     plt.yticks(fontsize=12, fontweight='bold')
+#     plt.legend(fontsize=12, loc='best')
+#     plt.gca().yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:,.0f}'))  # Always show full numbers
+#     plt.tight_layout()
+#     plt.savefig(f"sardh_3_Out_1_rf_comp_rd_above_{freqencyNAbove}.pdf")
+#     plt.show()
+
+
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
+def draw_RF_comparison_bar_graph(reference, predicted, freqencyNAbove):
+    # union of keys
+    all_keys = sorted(set(reference) | set(predicted), key=lambda x: (isinstance(x, str), x))
+    # keep a key if either ref or pred is above the threshold
+    keys = [k for k in all_keys if (reference.get(k, 0) > freqencyNAbove) or (predicted.get(k, 0) > freqencyNAbove)]
+    
+    # values
+    ref_values  = [reference.get(k, 0) for k in keys]
     pred_values = [predicted.get(k, 0) for k in keys]
 
-    # Plotting
+    # quick sanity print (optional)
+    missing_in_ref = [k for k in keys if k not in reference]
+    missing_in_pred = [k for k in keys if k not in predicted]
+    if missing_in_ref:  print("Only in predicted (showing orange with blue=0):", missing_in_ref)
+    if missing_in_pred: print("Only in reference (showing blue with orange=0):", missing_in_pred)
+
+    # plot
     x = range(len(keys))
     bar_width = 0.4
 
-    plt.bar([i - bar_width/2 for i in x], ref_values, width=bar_width, label='PARDA Calculated')
-    plt.bar([i + bar_width/2 for i in x], pred_values, width=bar_width, label='Our Prediction')
+    plt.figure(figsize=(max(10, min(24, len(keys) * 0.5)), 6))
+    plt.bar([i - bar_width/2 for i in x], ref_values,  width=bar_width, label='PARDA')
+    plt.bar([i + bar_width/2 for i in x], pred_values, width=bar_width, label='Prediction')
 
     plt.xlabel('Reuse Distances', fontsize=14, fontweight='bold')
     plt.ylabel('Frequency', fontsize=14, fontweight='bold')
     plt.xticks(x, keys, rotation=45, ha='right', fontsize=12, fontweight='bold')
     plt.yticks(fontsize=12, fontweight='bold')
     plt.legend(fontsize=12, loc='best')
-    plt.gca().yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:,.0f}'))  # Always show full numbers
+    plt.gca().yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:,.0f}'))
     plt.tight_layout()
     plt.savefig(f"sardh_3_Out_1_rf_comp_rd_above_{freqencyNAbove}.pdf")
     plt.show()
