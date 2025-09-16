@@ -1,3 +1,8 @@
+atax//atax.c
+/home/arazzak/static_ard/STATIC_RD_PREDICTOR/atax
+atax
+3843165
+Execution time: 15.027481 seconds
      0,	0.20896136,	   803073
      1,	0.12492568,	   480110
      2,	0.20813288,	   799889

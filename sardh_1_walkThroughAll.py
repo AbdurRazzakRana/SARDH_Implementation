@@ -49,7 +49,7 @@ vec_refs = ['retval', 'argc.addr', 'argv.addr', 'ni', 'nj', 'nk', 'nl', 'i',
 
 # atax
 # vec_refs = ['retval', 'i', '[40', 'i', 'j', '[50', 'j', 'i', 'j', 'tmp_array-i-j', 'k', '[70', 'k', 'i', 'j', 'tmp_array-i-j', 'i', 'k', 'A_array-i-k', 'i', 'k', 'x_array-i-k', 'i', 'j', 'tmp_array-i-j', 'k', 'k', ']', 'k', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'retval']
-
+vec_refs = ['retval', 'i', '[410', 'i', 'i', 'y-i', 'i', 'i', ']', 'i', 'i', '[390', 'i', 'i', 'tmp-i', 'j', '[410', 'j', 'i', 'tmp-i', 'i', 'j', 'A-i-j', 'j', 'x-j', 'i', 'tmp-i', 'j', 'j', ']', 'j', 'j', '[410', 'j', 'j', 'y-j', 'i', 'j', 'A-i-j', 'i', 'tmp-i', 'j', 'y-j', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i']
 # bicg
 # vec_refs =['retval', 'i', '[50', 'i', 'i', 'q_array-i', 'j', '[70', 'j', 'j', 's_array-j', 'i', 'r_array-i', 'i', 'j', 'A_array-i-j', 'j', 's_array-j', 'i', 'q_array-i', 'i', 'j', 'A_array-i-j', 'j', 'p_array-j', 'i', 'q_array-i', 'j', 'j', ']', 'j', 'i', 'i', ']', 'i', 'retval']
 
